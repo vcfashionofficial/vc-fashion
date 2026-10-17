@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sign in or create your VC Fashion customer account.">
+  <meta name="theme-color" content="#f8f7f4">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <title>Your VC Fashion account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="auth.css">
+  <script src="supabase-config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="supabase-client.js" defer></script>
+  <script src="auth.js" defer></script>
+  <script src="pwa.js" defer></script>
+</head>
+<body class="customer-auth-page">
+  <div class="announcement"><span>VC FASHION</span><span class="announcement-separator" aria-hidden="true">✳</span><span>THOUGHTFULLY MADE, READY FOR YOU</span></div>
+  <header class="header auth-header">
+    <a class="wordmark" href="index.html" aria-label="VC Fashion home">VC Fashion<span>®</span></a>
+    <a class="auth-shop-link" href="shop.html">Continue shopping <span aria-hidden="true">↗</span></a>
+  </header>
+  <main class="auth-main">
+    <div class="auth-back-row"><button class="drawer-back" id="auth-back-button" type="button" aria-label="Back">&larr; <span>Back</span></button></div>
+    <section class="auth-card" aria-labelledby="auth-title">
+      <p class="eyebrow">YOUR VC FASHION ACCOUNT</p>
+      <h1 id="auth-title">Welcome <em>back.</em></h1>
+      <p class="auth-intro" id="auth-intro">Sign in or create an account to see your orders.</p>
+      <div class="auth-options" id="auth-options">
+        <button class="auth-option" id="email-option" type="button"><span class="auth-option-icon" aria-hidden="true">@</span><span>Sign In</span><span aria-hidden="true">→</span></button>
+        <button class="auth-option" id="create-account-option" type="button"><span class="auth-option-icon" aria-hidden="true">＋</span><span>Create Account</span><span aria-hidden="true">→</span></button>
+        <button class="auth-option auth-google" id="google-option" type="button"><span class="google-mark" aria-hidden="true">G</span><span>Continue with Google</span><span aria-hidden="true">→</span></button>
+      </div>
+      <form class="auth-form" id="email-form" hidden>
+        <div class="auth-form-heading"><h2 id="email-form-title">Sign in with email</h2><div class="auth-form-actions"><button class="auth-text-button" id="email-options-back" type="button">All options</button><button class="auth-text-button" id="email-mode-toggle" type="button">Create account</button></div></div>
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email" autocomplete="email" inputmode="email" required>
+        <div class="password-label-row"><label for="password">Password</label><button class="auth-text-button" id="forgot-password" type="button">Forgot password?</button></div>
+        <div class="password-input-wrap"><input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required><button id="toggle-password" class="password-toggle" type="button" aria-label="Show password" aria-pressed="false">Show</button></div>
+        <label id="confirm-password-label" for="confirm-password" hidden>Confirm password</label>
+        <div class="password-input-wrap" id="confirm-password-wrap" hidden><input id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="8"><button id="toggle-confirm-password" class="password-toggle" type="button" aria-label="Show confirmation password" aria-pressed="false">Show</button></div>
+        <button class="auth-submit" id="email-submit" type="submit">Sign in <span aria-hidden="true">→</span></button>
+      </form>
+      <form class="auth-form" id="reset-form" hidden>
+        <div class="auth-form-heading"><h2 id="reset-form-title">Reset your password</h2><button class="auth-text-button" id="reset-back" type="button">Back to sign in</button></div>
+        <div id="reset-email-step"><p class="auth-help">We’ll send you a secure link to choose a new password.</p><label for="reset-email">Email address</label><input id="reset-email" name="email" type="email" autocomplete="email" required><button class="auth-submit" id="reset-email-submit" type="submit">Send reset link <span aria-hidden="true">→</span></button></div>
+        <div id="new-password-step" hidden><label for="new-password">New password</label><div class="password-input-wrap"><input id="new-password" name="newPassword" type="password" autocomplete="new-password" minlength="8"><button id="toggle-new-password" class="password-toggle" type="button" aria-label="Show new password" aria-pressed="false">Show</button></div><button class="auth-submit" id="save-password" type="submit">Update password <span aria-hidden="true">→</span></button></div>
+      </form>
+      <section class="auth-signed-in" id="signed-in-view" hidden aria-live="polite"><p>You’re signed in as <strong id="signed-in-email"></strong>.</p><a class="auth-submit auth-account-link" id="account-link" href="orders.html">Go to My Orders <span aria-hidden="true">→</span></a><button class="auth-signout" id="customer-signout" type="button">Sign out</button></section>
+      <p class="auth-message" id="auth-message" role="status" aria-live="polite"></p>
+      <p class="auth-legal" id="auth-legal">By continuing, you agree to use your VC Fashion account for your personal orders and saved details.</p>
+    </section>
+    <p class="auth-footnote">A considered wardrobe, with your details kept private.</p>
+  </main>
+</body>
+</html>

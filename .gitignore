@@ -1,0 +1,42 @@
+# ===========================================================================
+# VC Fashion — never commit these. Keep secrets out of GitHub (and therefore
+# out of Cloudflare Pages, which builds straight from the repository).
+# ===========================================================================
+
+# --- Environment & secrets ---------------------------------------------------
+.env
+.env.*
+!.env.example
+*.secret
+service-role*
+*service-role*
+sb_secret_*
+rzp_*
+*.pem
+*.key
+*.p12
+*.pfx
+
+# --- Supabase CLI local state ------------------------------------------------
+supabase/.temp/
+supabase/.branches/
+
+# --- Cloudflare / Wrangler local state --------------------------------------
+.wrangler/
+
+# --- Dependencies (static site: no build step, nothing to install) ----------
+node_modules/
+
+# --- Local-only files, scratch dumps and logs --------------------------------
+*.log
+debug.log
+_inspect.txt
+test-results.txt
+pwa-suite-output.txt
+
+# --- Editor & OS artefacts ---------------------------------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

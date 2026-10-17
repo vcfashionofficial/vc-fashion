@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f7f4">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="description" content="Complete your VC Fashion order.">
+  <title>Checkout — VC Fashion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="checkout.css">
+  <link rel="stylesheet" href="guest-order-claim.css">
+  <script src="products.js" defer></script>
+  <script src="supabase-config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="supabase-client.js" defer></script>
+  <script src="catalog-service.js" defer></script>
+  <script src="commerce.js" defer></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+  <script src="checkout.js" defer></script>
+  <script src="pwa.js" defer></script>
+</head>
+<body class="checkout-page">
+  <div class="announcement"><span>VC FASHION</span><span class="announcement-separator">✳</span><span>THOUGHTFULLY MADE, READY FOR YOU</span></div>
+  <header class="header checkout-header"><a class="wordmark" href="index.html">VC Fashion<span>®</span></a><span>SECURE CHECKOUT</span><a href="shop.html">Continue shopping <span aria-hidden="true">↗</span></a></header>
+  <main class="checkout-main">
+    <div class="checkout-back-row"><button class="drawer-back" id="checkout-back-button" type="button" aria-label="Back">&larr; <span>Back</span></button></div>
+    <div class="checkout-heading"><p class="eyebrow">YOUR ORDER / 01</p><h1>Almost <em>yours.</em></h1><p>Share your details and we’ll prepare your order.</p></div>
+    <div id="checkout-feedback" class="checkout-feedback" role="status" aria-live="polite" hidden></div>
+    <div id="checkout-pending-orders" class="checkout-pending-orders" hidden></div>
+    <p id="checkout-loading" class="checkout-loading">Loading your bag…</p>
+    <section id="checkout-empty" class="checkout-empty" hidden><span>✳</span><h2>Your bag is empty.</h2><p>Find a piece you love and come back when you’re ready.</p><a class="button button-dark" href="shop.html">Explore the collection <span>↗</span></a></section>
+    <section id="checkout-confirmation" class="checkout-confirmation" hidden aria-live="polite"></section>
+    <div id="checkout-content" class="checkout-layout" hidden>
+      <form id="checkout-form" class="checkout-form" novalidate>
+        <section class="checkout-panel"><div class="panel-heading"><span>01</span><div><p class="eyebrow">DELIVERY DETAILS</p><h2>Where should we send it?</h2></div></div><p class="required-note"><span aria-hidden="true">*</span> Required fields</p>
+          <div class="form-grid"><label class="form-field form-wide">Full name<span class="required-indicator" aria-hidden="true">*</span><input name="customer_name" autocomplete="name" required maxlength="120"></label><label class="form-field">Email<span class="required-indicator" aria-hidden="true">*</span><input name="customer_email" type="email" autocomplete="email" required maxlength="254"></label><label class="form-field">Phone<span class="required-indicator" aria-hidden="true">*</span><input name="customer_phone" type="tel" autocomplete="tel" inputmode="tel" required maxlength="20"></label><label class="form-field form-wide">Address<span class="required-indicator" aria-hidden="true">*</span><textarea name="shipping_address" autocomplete="street-address" rows="3" required maxlength="500"></textarea></label><label class="form-field">City<span class="required-indicator" aria-hidden="true">*</span><input name="shipping_city" autocomplete="address-level2" required maxlength="100"></label><label class="form-field">State<span class="required-indicator" aria-hidden="true">*</span><input name="shipping_state" autocomplete="address-level1" required maxlength="100"></label><label class="form-field">Pincode<span class="required-indicator" aria-hidden="true">*</span><input name="shipping_pincode" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6" required></label></div>
+        </section>
+        <section class="checkout-panel payment-note"><span class="payment-mark">02</span><div><p class="eyebrow">PAYMENT</p><h2>Secure online payment</h2><p>Pay securely through Razorpay. Your order is confirmed only after the payment is verified.</p></div><span class="pending-pill">RAZORPAY</span></section>
+      </form>
+      <aside class="checkout-order-panel"><div class="panel-heading"><span>03</span><div><p class="eyebrow">YOUR SELECTION</p><h2>Order summary</h2></div></div><div id="checkout-items" class="checkout-items"></div><div class="checkout-totals"><div><span>Subtotal</span><strong id="summary-subtotal">₹0</strong></div><div><span>Shipping</span><strong id="summary-shipping">₹0</strong></div><div><span>Discount</span><strong id="summary-discount">₹0</strong></div><div class="grand-total"><span>Total</span><strong id="summary-total">₹0</strong></div></div><button id="place-order" class="place-order" type="submit" form="checkout-form">Place order and pay <span aria-hidden="true">↗</span></button>
+        <p class="checkout-terms">Payments are securely processed by Razorpay. Your order is confirmed after server verification.</p></aside>
+    </div>
+  </main>
+  <footer class="footer checkout-footer"><div class="footer-bottom"><span>© 2026 VC FASHION. ALL RIGHTS RESERVED.</span><a href="shop.html">Continue shopping ↗</a><span>INR ₹</span></div></footer>
+  <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <a href="index.html#home" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg><span>Home</span></a>
+    <a href="index.html#collections" aria-label="Categories"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg><span>Categories</span></a>
+    <a href="orders.html" aria-label="My Orders"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V21H6z"></path><path d="M14 3.5V8h4M9 12h6M9 16h6"></path></svg><span>My Orders</span></a>
+    <a href="shop.html?wishlist=1" aria-label="Wishlist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.7c0 5.2-8.8 11-8.8 11s-8.8-5.8-8.8-11A4.7 4.7 0 0 1 12 6.1a4.7 4.7 0 0 1 8.8 2.6Z"></path></svg><span>Wishlist</span></a>
+    <a href="shop.html" aria-label="Open shopping bag in the shop" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg><span>Cart</span></a>
+  </nav>
+</body>
+</html>

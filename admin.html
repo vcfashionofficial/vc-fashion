@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f7f4">
+  <title>Admin | VC Fashion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+  <script src="supabase-config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="supabase-client.js" defer></script>
+  <script src="invoice.js" defer></script>
+  <script src="admin.js" defer></script>
+</head>
+<body>
+  <main class="auth-shell" id="auth-view" hidden>
+    <a class="brand" href="index.html">VC Fashion<span>®</span></a>
+    <section class="auth-card" aria-labelledby="login-title">
+      <p class="eyebrow">VC FASHION / PRIVATE ACCESS</p>
+      <h1 id="login-title">Welcome <em>back.</em></h1>
+      <p class="auth-copy">Sign in with your administrator account to manage the studio.</p>
+      <form id="login-form">
+        <label for="email">Email address</label>
+        <input id="email" name="email" type="email" autocomplete="username" required>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+        <button class="primary-button" id="login-button" type="submit">Sign in <span>↗</span></button>
+      </form>
+      <p class="feedback" id="auth-message" role="status" aria-live="polite"></p>
+      <a class="back-link" href="index.html">← Back to storefront</a>
+    </section>
+  </main>
+
+  <main class="loading-screen" id="loading-view" aria-live="polite"><span class="loader"></span><p>Preparing your workspace…</p></main>
+
+  <div class="admin-app" id="dashboard-view" hidden>
+    <aside class="sidebar" id="sidebar">
+      <a class="brand sidebar-brand" href="index.html">VC Fashion<span>®</span></a>
+      <p class="side-label">WORKSPACE</p>
+      <nav class="side-nav" aria-label="Admin navigation">
+        <button class="nav-item is-active" type="button" data-section="dashboard"><span>◫</span>Dashboard</button>
+        <button class="nav-item" type="button" data-section="products"><span>◇</span>Products</button>
+        <button class="nav-item" type="button" data-section="categories"><span>▦</span>Categories</button>
+        <button class="nav-item" type="button" data-section="orders"><span>↗</span>Orders<span class="nav-badge nav-badge-green" data-nav-badge="orders" hidden><i class="nav-badge-dot" aria-hidden="true"></i><span class="nav-badge-count" data-nav-badge-count></span></span></button>
+        <button class="nav-item" type="button" data-section="customer-history"><span>◷</span>Customer History</button>
+        <button class="nav-item" type="button" data-section="call-verification"><span>◉</span>Call verification<span class="nav-badge nav-badge-green" data-nav-badge="call-verification" hidden><i class="nav-badge-dot" aria-hidden="true"></i><span class="nav-badge-count" data-nav-badge-count></span></span></button>
+        <button class="nav-item" type="button" data-section="settings"><span>⚙</span>Settings</button>
+        <button class="nav-item" type="button" data-section="stock"><span>▤</span>Stock<span class="nav-badge nav-badge-red" data-nav-badge="stock" hidden><i class="nav-badge-dot" aria-hidden="true"></i><span class="nav-badge-count" data-nav-badge-count></span></span></button>
+      </nav>
+      <a class="store-link" href="index.html">↗ <span>View storefront</span></a>
+    </aside>
+    <div class="main-column">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobile-menu" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+        <span class="topbar-title">VC FASHION / ADMIN</span>
+        <div class="admin-identity"><span class="avatar">V</span><span class="admin-email" id="admin-email"></span><button class="logout-button" id="logout-button" type="button">Log out</button></div>
+      </header>
+      <main class="content">
+        <section class="dashboard-section" data-panel="dashboard">
+          <div class="page-heading"><div><p class="eyebrow">YOUR STORE AT A GLANCE</p><h1>Good to see you.</h1><p>Here’s what’s happening with VC Fashion today.</p></div><span class="date-stamp" id="date-stamp"></span></div>
+          <div class="stats-grid" aria-live="polite">
+            <article class="stat-card"><div class="stat-head"><span>Total products</span><span class="stat-icon">◇</span></div><strong id="total-products">—</strong><small>In your catalog</small></article>
+            <article class="stat-card"><div class="stat-head"><span>Active products</span><span class="stat-icon">✓</span></div><strong id="active-products">—</strong><small>Visible in the storefront</small></article>
+            <article class="stat-card"><div class="stat-head"><span>Categories</span><span class="stat-icon">▦</span></div><strong id="category-count">—</strong><small>Product collections</small></article>
+            <article class="stat-card"><div class="stat-head"><span>Low stock</span><span class="stat-icon stock-icon">!</span></div><strong id="low-stock-count">—</strong><small>Products with a variant at 1–5 units</small></article>
+            <article class="stat-card"><div class="stat-head"><span>Orders</span><span class="stat-icon">↗</span></div><strong id="total-orders">—</strong><small><span id="pending-orders">0</span> pending</small></article>
+
+          </div>
+          <section class="welcome-panel"><div><p class="eyebrow">THE VC FASHION WAY</p><h2>Thoughtful design.<br><em>Considered management.</em></h2><p>Your catalog overview is connected to Supabase. Product management tools will be available here in the next release.</p></div><span class="panel-mark">VC<span>®</span></span></section>
+          <p class="dashboard-error" id="dashboard-error" role="status"></p>
+        </section>
+        <section class="products-section" data-panel="products" hidden>
+          <div class="products-heading"><div><p class="eyebrow">YOUR CATALOG</p><h1>Products</h1><p>Manage the pieces in your VC Fashion collection.</p></div><button class="product-primary-button" id="add-product-button" type="button"><span>＋</span> Add product</button></div>
+          <div class="product-toolbar"><label class="product-search"><span>⌕</span><input id="product-search" type="search" placeholder="Search products…" autocomplete="off"></label><label class="filter-label"><span class="sr-only">Filter by category</span><select id="category-filter"><option value="">All categories</option></select></label><label class="filter-label"><span class="sr-only">Filter by status</span><select id="status-filter"><option value="">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></select></label></div>
+          <p class="product-feedback" id="product-feedback" role="status" aria-live="polite"></p>
+          <div class="product-table-wrap"><table class="product-table"><thead><tr><th>PRODUCT</th><th>CATEGORY</th><th>PRICE</th><th>STATUS</th><th>STOCK</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody id="product-rows"><tr><td colspan="6" class="table-message">Loading products…</td></tr></tbody></table></div>
+          <div class="product-mobile-list" id="product-mobile-list" aria-live="polite"></div>
+        </section>
+        <section class="stock-section" data-panel="stock" hidden>
+          <div class="products-heading"><div><p class="eyebrow">INVENTORY CONTROL</p><h1>Stock</h1><p>Update available quantities for each product option.</p></div></div>
+          <div class="product-toolbar"><label class="product-search"><span>⌕</span><input id="stock-search" type="search" placeholder="Search products or SKU…" autocomplete="off"></label><label class="filter-label"><span class="sr-only">Filter by category</span><select id="stock-category-filter"><option value="">All categories</option></select></label><label class="filter-label"><span class="sr-only">Filter by stock status</span><select id="stock-status-filter"><option value="">All stock</option><option value="out">Out of stock</option><option value="low">Low stock</option><option value="available">In stock</option></select></label></div>
+          <p class="stock-feedback" id="stock-feedback" role="status" aria-live="polite"></p>
+          <div class="stock-table-wrap"><table class="product-table stock-table"><thead><tr><th>PRODUCT</th><th>SKU</th><th>SIZE</th><th>COLOR</th><th>CATEGORY</th><th>CURRENT STOCK</th><th>STATUS</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody id="stock-rows"><tr><td colspan="8" class="table-message">Open Stock to load inventory…</td></tr></tbody></table></div>
+          <div class="stock-mobile-list" id="stock-mobile-list" aria-live="polite"></div>
+        </section>
+        <section class="categories-section" data-panel="categories" hidden>
+          <div class="products-heading"><div><p class="eyebrow">ORGANIZE YOUR COLLECTION</p><h1>Categories</h1><p>Keep your product collections clear and easy to browse.</p></div><button class="product-primary-button" id="add-category-button" type="button"><span>＋</span> Add category</button></div>
+          <p class="category-feedback" id="category-feedback" role="status" aria-live="polite"></p>
+          <div class="category-table-wrap"><table class="product-table category-table"><thead><tr><th>CATEGORY</th><th>PRODUCTS</th><th><span class="sr-only">Actions</span></th></tr></thead><tbody id="category-rows"><tr><td colspan="3" class="table-message">Loading categories…</td></tr></tbody></table></div>
+          <div class="category-mobile-list" id="category-mobile-list" aria-live="polite"></div>
+        </section>
+        <section class="orders-section" data-panel="orders" hidden>
+          <div class="products-heading"><div><p class="eyebrow">CUSTOMER ACTIVITY</p><h1>Orders</h1><p>Review purchases and keep customers up to date.</p></div><button class="secondary-button orders-refresh" id="refresh-orders" type="button">↻ Refresh</button></div>
+          <div class="product-toolbar order-toolbar"><label class="product-search"><span>⌕</span><input id="order-search" type="search" placeholder="Search order, customer or phone…" autocomplete="off"></label><label class="filter-label"><span class="sr-only">Filter by order status</span><select id="order-status-filter"><option value="">All order statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="processing">Processing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></label><label class="filter-label"><span class="sr-only">Filter by payment status</span><select id="payment-status-filter"><option value="">All payment statuses</option><option value="pending">Pending</option><option value="paid">Paid</option><option value="failed">Failed</option><option value="refunded">Refunded</option></select></label></div>
+          <p class="orders-feedback" id="orders-feedback" role="status" aria-live="polite"></p>
+          <div class="orders-table-wrap"><table class="product-table orders-table"><thead><tr><th>ORDER</th><th>CUSTOMER</th><th>DATE</th><th>TOTAL</th><th>PAYMENT</th><th>STATUS</th><th><span class="sr-only">Details</span></th></tr></thead><tbody id="order-rows"><tr><td colspan="7" class="table-message">Open Orders to load orders…</td></tr></tbody></table></div>
+          <div class="orders-mobile-list" id="orders-mobile-list" aria-live="polite"></div>
+        </section>
+        <section class="orders-section" data-panel="customer-history" hidden>
+          <div class="products-heading"><div><p class="eyebrow">SAVED ORDER SNAPSHOTS</p><h1>Customer History</h1><p>Saved snapshots of orders, kept separate from the live Orders list.</p></div><button class="secondary-button orders-refresh" id="refresh-customer-history" type="button">↻ Refresh</button></div>
+          <p class="orders-feedback" id="customer-history-feedback" role="status" aria-live="polite"></p>
+          <div class="orders-table-wrap"><table class="product-table orders-table history-table"><thead><tr><th>ORDER</th><th>CUSTOMER</th><th>PLACED</th><th>ITEMS</th><th>TOTAL</th><th>PAYMENT</th><th>SAVED</th></tr></thead><tbody id="history-rows"><tr><td colspan="7" class="table-message">Open Customer History to load saved orders…</td></tr></tbody></table></div>
+          <div class="orders-mobile-list" id="history-mobile-list" aria-live="polite"></div>
+        </section>
+        <section class="orders-section" data-panel="call-verification" hidden>
+          <div class="products-heading"><div><p class="eyebrow">CUSTOMER REQUESTS</p><h1>Call Verification Requests</h1><p>Free call-verification requests for confirmed purchases.</p></div><button class="secondary-button" id="refresh-call-verification-requests" type="button">↻ Refresh</button></div>
+          <p class="orders-feedback" id="call-verification-requests-feedback" role="status" aria-live="polite"></p>
+          <div class="call-verification-request-list" id="call-verification-request-list" aria-live="polite"><p class="table-message">Open Call Verification Requests to load requests…</p></div>
+        </section>
+        <section class="placeholder-section" data-panel="settings" hidden><p class="eyebrow">YOUR WORKSPACE</p><h1>Settings</h1><div class="placeholder-card"><span>⚙</span><h2>Settings coming next</h2><p>Workspace settings will be available in a future release.</p></div></section>
+      </main>
+    </div>
+  </div>
+  <div class="modal-backdrop" id="order-details-modal" hidden>
+    <section class="order-details-modal" role="dialog" aria-modal="true" aria-labelledby="order-details-title">
+      <header class="modal-heading"><div><p class="eyebrow">VC FASHION / ORDER</p><h2 id="order-details-title">Order details</h2></div><button class="modal-close" id="close-order-details" type="button" aria-label="Close">×</button></header>
+      <div class="order-details-content" id="order-details-content"><p class="table-message">Loading order details…</p></div>
+      <p class="order-detail-feedback" id="order-detail-feedback" role="status" aria-live="polite"></p>
+    </section>
+  </div>  <div class="modal-backdrop" id="product-modal" hidden>
+    <section class="product-modal" role="dialog" aria-modal="true" aria-labelledby="product-modal-title">
+      <header class="modal-heading"><div><p class="eyebrow">VC FASHION / CATALOG</p><h2 id="product-modal-title">Add product</h2></div><button class="modal-close" id="close-product-modal" type="button" aria-label="Close">×</button></header>
+      <form id="product-form">
+        <div class="form-grid">
+          <label class="field-wide">Product name<input name="name" required maxlength="160"></label>
+          <label class="field-wide">Slug<input name="slug" required maxlength="180" placeholder="relaxed-linen-shirt"></label>
+          <label class="field-wide">Description<textarea name="description" rows="3"></textarea></label>
+          <label>Category<select name="category_id" id="product-category" required><option value="">Choose category</option></select></label>
+          <label>Sort order<input name="sort_order" type="number" step="1" value="0"></label>
+          <label>Price (INR)<input name="price" type="number" min="0.01" step="0.01" required></label>
+          <label>Compare-at price (INR)<input name="compare_at_price" type="number" min="0" step="0.01"></label>
+          <label class="field-wide">Product media<input id="product-media-input" name="media" type="file" multiple accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,.jpg,.jpeg,.png,.webp,.mp4,.webm"><small>Select multiple images (JPG, JPEG, PNG, WEBP — up to 5 MB each) and videos (MP4, WEBM — up to 25 MB each). The first image is the main product image; use the media controls to remove, reorder, or choose another main image. Limits: 8 images and 3 videos per product.</small></label>
+          <div class="media-manager field-wide" id="media-manager"><p class="media-manager-empty" id="media-empty">Selected images and videos will appear here. The first image is the main product image.</p><div class="media-grid" id="media-grid"></div></div>
+          <label class="check-field"><input name="is_active" type="checkbox" checked><span>Active in storefront</span></label>
+          <label class="check-field"><input name="is_new" type="checkbox"><span>New arrival</span></label>
+          <label class="check-field"><input name="is_best_seller" type="checkbox"><span>Best seller</span></label>
+        </div>
+        <div class="variants-heading"><div><p class="eyebrow">OPTIONS & INVENTORY</p><h3>Variants</h3></div><button class="add-variant-button" id="add-variant-button" type="button">＋ Add variant</button></div>
+        <div class="variant-editor-head"><span>SIZE</span><span>COLOR NAME</span><span>COLOR HEX</span><span>STOCK</span><span>SKU</span><span></span></div>
+        <div class="variant-editor" id="variant-editor"></div>
+        <p class="form-feedback" id="form-feedback" role="status" aria-live="polite"></p>
+        <footer class="form-actions"><button class="secondary-button" id="cancel-product" type="button">Cancel</button><button class="product-primary-button" id="save-product" type="submit">Save product</button></footer>
+      </form>
+    </section>
+  </div>
+  <div class="modal-backdrop" id="category-modal" hidden>
+    <section class="category-modal-card" role="dialog" aria-modal="true" aria-labelledby="category-modal-title">
+      <header class="modal-heading"><div><p class="eyebrow">VC FASHION / COLLECTIONS</p><h2 id="category-modal-title">Add category</h2></div><button class="modal-close" id="close-category-modal" type="button" aria-label="Close">×</button></header>
+      <form id="category-form"><label class="category-name-field" for="category-name">Category name<input id="category-name" name="name" maxlength="100" required autocomplete="off" placeholder="e.g. Accessories"></label><p class="form-feedback" id="category-form-feedback" role="status" aria-live="polite"></p><footer class="form-actions"><button class="secondary-button" id="cancel-category" type="button">Cancel</button><button class="product-primary-button" id="save-category" type="submit">Save category</button></footer></form>
+    </section>
+  </div>
+</body>
+</html>

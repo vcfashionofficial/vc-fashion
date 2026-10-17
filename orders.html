@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="View your VC Fashion orders and order details.">
+  <meta name="theme-color" content="#f8f7f4">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <title>My Orders — VC Fashion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="orders.css">
+  <script src="supabase-config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="supabase-client.js" defer></script>
+  <script src="orders.js" defer></script>
+  <script src="pwa.js" defer></script>
+</head>
+<body class="orders-page">
+  <div class="announcement"><span>VC FASHION</span><span class="announcement-separator">✳</span><span>THOUGHTFULLY MADE, READY FOR YOU</span></div>
+  <header class="header orders-header"><a class="wordmark" href="index.html" aria-label="VC Fashion home">VC Fashion<span>®</span></a><nav class="orders-nav" aria-label="Account navigation"><a href="shop.html">Shop</a><a href="orders.html" aria-current="page">My Orders</a></nav><div class="orders-account-actions"><a class="orders-auth-link" id="orders-auth-link" href="auth.html?mode=login">Sign in</a><button class="orders-logout-button" id="orders-logout" type="button" hidden>Sign out</button><a class="orders-cart-link" href="shop.html">Continue shopping <span aria-hidden="true">↗</span></a></div></header>
+  <main class="orders-main">
+    <div class="orders-back-row"><button class="drawer-back" id="orders-back-button" type="button" aria-label="Back">&larr; <span>Back</span></button></div>
+    <div class="orders-page-heading"><p class="eyebrow">YOUR VC FASHION ACCOUNT</p><h1>My <em>orders.</em></h1><p>Order details and delivery progress, all in one place.</p></div>
+    <div id="orders-feedback" class="orders-feedback" role="status" aria-live="polite" hidden></div>
+    <section id="orders-loading" class="orders-state"><span class="orders-spinner" aria-hidden="true"></span><p>Checking your account…</p></section>
+    <section id="orders-auth-required" class="orders-state" hidden><span class="orders-state-mark" aria-hidden="true">◇</span><h2>Sign in to view your orders.</h2><p>Sign in or create a VC Fashion account to see orders placed while signed in.</p><div class="orders-auth-actions"><a class="orders-primary-button" id="orders-login" href="auth.html?mode=login">Sign in <span aria-hidden="true">↗</span></a><a class="orders-secondary-button" id="orders-signup" href="auth.html?mode=signup">Create account</a></div></section>
+    <section id="orders-error" class="orders-state" hidden><span class="orders-state-mark" aria-hidden="true">!</span><h2>We couldn’t load your orders.</h2><p>Try again in a moment. Your order information remains protected.</p><button id="orders-retry" class="orders-secondary-button" type="button">Try again</button></section>
+    <section id="orders-empty" class="orders-state" hidden><span class="orders-state-mark" aria-hidden="true">✳</span><h2>You haven’t placed any orders yet.</h2><p>Your next favourite piece is waiting in the collection.</p><a class="orders-primary-button" href="shop.html">Continue shopping <span aria-hidden="true">↗</span></a></section>
+    <section id="orders-list-view" hidden><div class="orders-list-heading"><div><p class="eyebrow">ORDER HISTORY</p><h2>Placed by you</h2></div><span id="orders-count" class="orders-count"></span></div><div id="orders-list" class="orders-list"></div></section>
+    <section id="order-detail-view" hidden></section>
+  </main>
+  <footer class="footer orders-footer"><div class="footer-bottom"><span>© 2026 VC FASHION. ALL RIGHTS RESERVED.</span><a href="shop.html">Shop the collection ↗</a><span>INR ₹</span></div></footer>
+  <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <a href="index.html#home" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg><span>Home</span></a>
+    <a href="index.html#collections" aria-label="Categories"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg><span>Categories</span></a>
+    <a href="orders.html" aria-label="My Orders" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V21H6z"></path><path d="M14 3.5V8h4M9 12h6M9 16h6"></path></svg><span>My Orders</span></a>
+    <a href="shop.html?wishlist=1" aria-label="Wishlist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.7c0 5.2-8.8 11-8.8 11s-8.8-5.8-8.8-11A4.7 4.7 0 0 1 12 6.1a4.7 4.7 0 0 1 8.8 2.6Z"></path></svg><span>Wishlist</span></a>
+    <a href="shop.html" aria-label="Open shopping bag in the shop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg><span>Cart</span></a>
+  </nav>
+</body>
+</html>

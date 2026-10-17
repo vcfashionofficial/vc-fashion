@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Search considered everyday clothing from VC Fashion.">
+  <meta name="theme-color" content="#f8f7f4">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <title>Search | VC Fashion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="products.js" defer></script>
+  <script src="supabase-config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="supabase-client.js" defer></script>
+  <script src="catalog-service.js" defer></script>
+  <script src="commerce.js" defer></script>
+  <script src="search.js" defer></script>
+  <script src="pwa.js" defer></script>
+</head>
+<body class="search-page">
+  <header class="search-page-header">
+    <button class="search-page-back" id="search-back" type="button"><span aria-hidden="true">&larr;</span> Back</button>
+    <a class="wordmark" href="index.html" aria-label="VC Fashion home">VC Fashion<span>®</span></a>
+    <button class="icon-button cart-trigger" id="cart-trigger" type="button" aria-label="Open shopping bag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg><span class="cart-count" id="cart-count" aria-live="polite">0</span></button>
+    <a class="icon-button account-trigger" href="auth.html" aria-label="Account" title="Account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"></circle><path d="M5 20a7 7 0 0 1 14 0"></path></svg></a>
+  </header>
+  <main class="search-main">
+    <p class="eyebrow">FIND YOUR EVERYDAY</p>
+    <h1>Search the <em>collection.</em></h1>
+    <form class="search-page-form" id="search-page-form" role="search">
+      <label class="sr-only" for="search-page-input">Search products by name, category, colour or size</label>
+      <input id="search-page-input" type="search" placeholder="Try linen, olive, or size M" autocomplete="off" enterkeyhint="search" autofocus>
+      <button class="search-page-clear" id="search-page-clear" type="button" aria-label="Clear search" hidden>×</button>
+      <button class="search-page-submit" type="submit" aria-label="Search products"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg></button>
+    </form>
+    <section class="recent-searches-section" id="recent-searches-section" aria-labelledby="recent-searches-title" hidden>
+      <div class="recent-searches-heading"><h2 id="recent-searches-title">Recent searches</h2><button id="recent-searches-clear-all" type="button">Clear all</button></div>
+      <ul class="recent-searches-list" id="recent-searches-list"></ul>
+    </section>
+    <section class="search-results-section" aria-labelledby="search-results-title">
+      <div class="search-results-heading"><h2 id="search-results-title">Suggested pieces</h2><p id="search-result-count" role="status" aria-live="polite"></p></div>
+      <div class="search-results" id="search-results" aria-label="Product suggestions"></div>
+      <div class="search-empty-state" id="search-empty-state" hidden><h3>No pieces found</h3><p>Try another name, category, colour, or size.</p><button type="button" id="search-empty-clear">Clear search</button></div>
+    </section>
+  </main>
+  <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-labelledby="cart-title" aria-hidden="true">
+    <div class="drawer-header"><div><p class="eyebrow">YOUR SELECTION</p><h2 id="cart-title">Shopping bag <span id="drawer-count">(0)</span></h2></div><button class="icon-button drawer-close" id="cart-close" type="button" aria-label="Close shopping bag">×</button></div>
+    <div class="cart-items" id="cart-items"></div>
+    <div class="cart-empty" id="cart-empty"><span aria-hidden="true">✳</span><p>Your bag is taking a little breather.</p><a href="shop.html" id="continue-shopping">Explore the collection →</a></div>
+    <div class="cart-summary" id="cart-summary"><div><span>Subtotal</span><strong id="cart-subtotal">₹0</strong></div><p>Shipping and taxes calculated at checkout.</p><button class="checkout-button" id="checkout-button" type="button">Continue to checkout <span aria-hidden="true">→</span></button><small>Payment is completed securely at checkout.</small></div>
+  </aside>
+  <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <a href="index.html#home" aria-label="Home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg><span>Home</span></a>
+    <a href="index.html#collections" aria-label="Categories"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="1"></rect><rect x="13" y="3" width="8" height="8" rx="1"></rect><rect x="3" y="13" width="8" height="8" rx="1"></rect><rect x="13" y="13" width="8" height="8" rx="1"></rect></svg><span>Categories</span></a>
+    <a href="orders.html" aria-label="My Orders"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4V21H6z"></path><path d="M14 3.5V8h4M9 12h6M9 16h6"></path></svg><span>My Orders</span></a>
+    <a href="shop.html?wishlist=1" aria-label="Wishlist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.7c0 5.2-8.8 11-8.8 11s-8.8-5.8-8.8-11A4.7 4.7 0 0 1 12 6.1a4.7 4.7 0 0 1 8.8 2.6Z"></path></svg><span>Wishlist</span></a>
+    <button type="button" class="mobile-cart-trigger" aria-label="Open shopping bag"><span class="mobile-cart-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 13H4L5 8Z"></path><path d="M9 9V6a3 3 0 0 1 6 0v3"></path></svg><span class="mobile-cart-count" id="mobile-cart-count" aria-live="polite">0</span></span><span>Cart</span></button>
+  </nav>
+</body>
+</html>
