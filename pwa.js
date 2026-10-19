@@ -19,8 +19,11 @@
   }
 
   const installButton = document.getElementById('install-app');
+  const floatingInstallButton = document.getElementById('install-app-float');
   const instructionsPanel = document.getElementById('install-instructions');
-  if (!installButton && !instructionsPanel) return;
+  const floatingInstructionsPanel = document.getElementById('install-float-instructions');
+  const installButtons = [installButton, floatingInstallButton].filter(Boolean);
+  if (!installButtons.length && !instructionsPanel && !floatingInstructionsPanel) return;
 
   const standaloneQuery = window.matchMedia ? window.matchMedia('(display-mode: standalone)') : null;
   const isStandalone = (standaloneQuery && standaloneQuery.matches) || navigator.standalone === true;
@@ -28,16 +31,13 @@
   const ua = navigator.userAgent;
   const isIos = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const isAndroid = /Android/.test(ua);
-  const isChromiumFamily = /Chrome|Chromium|Edg\//.test(ua) && !/OPR\//.test(ua);
-  // Only Chromium on Android/desktop fires beforeinstallprompt; WebKit (Safari,
-  // iOS Chrome) never does, so those browsers get instructions instead.
-  const mayExposeInstallPrompt = isChromiumFamily && !isIos;
 
   let deferredPrompt = null;
 
   const hideInstallUi = () => {
-    if (installButton) installButton.hidden = true;
+    installButtons.forEach(button => { button.hidden = true; button.setAttribute('aria-expanded', 'false'); });
     if (instructionsPanel) instructionsPanel.hidden = true;
+    if (floatingInstructionsPanel) floatingInstructionsPanel.hidden = true;
   };
 
   const installationSteps = () => {
@@ -72,7 +72,11 @@
   };
 
   const showInstructions = () => {
-    if (!instructionsPanel) return;
+    showInstructionsIn(instructionsPanel);
+  };
+
+  const showInstructionsIn = panel => {
+    if (!panel) return;
     const { title, steps } = installationSteps();
     const heading = document.createElement('strong');
     heading.textContent = title;
@@ -82,24 +86,26 @@
       item.textContent = step;
       list.appendChild(item);
     }
-    instructionsPanel.replaceChildren(heading, list);
-    instructionsPanel.hidden = false;
+    panel.replaceChildren(heading, list);
+    panel.hidden = false;
   };
 
   if (isStandalone) {
     // Already installed: no install controls needed.
     hideInstallUi();
-  } else if (installButton && !mayExposeInstallPrompt) {
-    // Browsers without the install-prompt API show the button immediately; it
-    // opens written instructions rather than pretending a prompt exists.
-    installButton.hidden = false;
+  } else {
+    // Do not make visibility depend on beforeinstallprompt. Chrome may delay or
+    // omit that event (for example before its installability checks complete),
+    // and localhost is not always immediately installable. The button remains
+    // useful because clicking without a captured event opens honest guidance.
+    installButtons.forEach(button => { button.hidden = false; });
   }
 
   addEventListener('beforeinstallprompt', event => {
     // Chromium qualifies for the native prompt: keep it and reveal the button.
     event.preventDefault();
     deferredPrompt = event;
-    if (!isStandalone && installButton) installButton.hidden = false;
+    if (!isStandalone) installButtons.forEach(button => { button.hidden = false; });
   });
 
   addEventListener('appinstalled', () => {
@@ -107,21 +113,29 @@
     hideInstallUi();
   });
 
-  if (installButton) {
-    installButton.addEventListener('click', async () => {
+  installButtons.forEach(button => {
+    button.addEventListener('click', async () => {
       if (deferredPrompt) {
         deferredPrompt.prompt();
+        let choice = null;
         try {
-          await deferredPrompt.userChoice;
+          choice = await deferredPrompt.userChoice;
         } catch {
           // The prompt was already handled; nothing further to do.
         }
         deferredPrompt = null;
         if (instructionsPanel) instructionsPanel.hidden = true;
-        if (mayExposeInstallPrompt) installButton.hidden = true;
+        if (floatingInstructionsPanel) floatingInstructionsPanel.hidden = true;
+        installButtons.forEach(installControl => installControl.setAttribute('aria-expanded', 'false'));
+        if (choice?.outcome === 'accepted') hideInstallUi();
         return;
       }
-      showInstructions();
+      const panel = button === floatingInstallButton ? floatingInstructionsPanel : instructionsPanel;
+      const wasOpen = panel && !panel.hidden;
+      if (instructionsPanel) instructionsPanel.hidden = true;
+      if (floatingInstructionsPanel) floatingInstructionsPanel.hidden = true;
+      showInstructionsIn(wasOpen ? null : panel);
+      button.setAttribute('aria-expanded', String(Boolean(panel && !wasOpen)));
     });
-  }
+  });
 })();

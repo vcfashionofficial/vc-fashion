@@ -10,6 +10,7 @@
 .footer-install-button{background:none;border:0;padding:0;margin:0;text-align:left;font:inherit;font-size:9px;color:#aaa99f;cursor:pointer;transition:color .2s}
 .footer-install-button:hover{color:#fff}
 .install-instructions{display:flex;flex-direction:column;gap:6px;font-size:8px;line-height:1.7;color:#8e8f86}
+.install-instructions[hidden],.install-app-float[hidden]{display:none}
 .install-instructions strong{color:#c5c3ae;font-weight:600;letter-spacing:.3px}
 .install-instructions ul{margin:0;padding-left:13px;display:flex;flex-direction:column;gap:4px}
 @media(max-width:680px){.footer-install-button{font-size:8px}.install-instructions{font-size:7px}}
@@ -348,6 +349,15 @@
 .whatsapp-channel-tooltip:after{content:"";position:absolute;top:50%;left:100%;transform:translateY(-50%);border:5px solid transparent;border-left-color:#20211f}
 @media(hover:hover) and (pointer:fine){.whatsapp-channel-float:hover .whatsapp-channel-tooltip,.whatsapp-channel-float:focus-visible .whatsapp-channel-tooltip{opacity:1;visibility:visible;transform:translate(0,-50%)}}
 @media(max-width:680px){.whatsapp-channel-float{right:max(14px,env(safe-area-inset-right) + 8px);bottom:calc(154px + env(safe-area-inset-bottom));width:52px;height:52px}.whatsapp-channel-float svg{width:29px;height:29px}.whatsapp-channel-tooltip{display:none}}
+.install-app-float-wrap{position:fixed;right:max(20px,env(safe-area-inset-right) + 12px);bottom:94px;z-index:15;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.install-app-float{min-height:46px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 15px;border:1px solid rgba(25,26,24,.08);border-radius:999px;background:var(--paper);color:var(--ink);box-shadow:0 5px 18px rgba(21,24,20,.2);font:600 11px var(--sans);letter-spacing:.1px;white-space:nowrap;cursor:pointer;transition:background-color .18s ease,transform .18s ease,box-shadow .18s ease}
+.install-app-float:hover{background:#fff;transform:translateY(-2px);box-shadow:0 7px 22px rgba(21,24,20,.25)}
+.install-app-float:focus-visible{outline:3px solid #fff;outline-offset:3px;box-shadow:0 0 0 6px #777959}
+.install-app-float svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.install-float-instructions{width:min(300px,calc(100vw - 32px));max-height:min(45vh,320px);overflow:auto;padding:14px 16px;border:1px solid rgba(25,26,24,.08);border-radius:12px;background:#20211f;box-shadow:0 8px 28px rgba(0,0,0,.22);font-size:10px;color:#c5c3ae}
+.install-float-instructions strong{color:#f5f4ef}
+@media(max-width:680px){.install-app-float-wrap{right:max(14px,env(safe-area-inset-right) + 8px);bottom:calc(86px + env(safe-area-inset-bottom));gap:8px}.install-app-float{min-height:44px;padding:0 13px;font-size:10px}.install-float-instructions{max-height:35vh}}
+@media(prefers-reduced-motion:reduce){.install-app-float{transition:none}}
 
 /* Best Seller hero carousel, revealed only when the admin-selected list is non-empty. */
 .hero.has-bestsellers{background:#232420}
