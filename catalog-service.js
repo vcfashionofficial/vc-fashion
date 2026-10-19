@@ -23,7 +23,7 @@
       legacyId: product.id,
       categoryId: null,
       description: product.description || '',
-      imageUrl: /^https?:\/\//i.test(product.image || '') ? product.image : '',
+      imageUrl: product.imageUrl || (/^https?:\/\//i.test(product.image || '') ? product.image : ''),
       variants,
       defaultSize: product.sizes?.includes('M') ? 'M' : (product.sizes?.[0] || ''),
       defaultColor: product.colors?.[0] || '',
@@ -55,11 +55,16 @@
 
   async function galleryDetails(row, client, mainUrl) {
     const entries = readMediaEntries(row);
+    const mainPath = row.image_path ?? row.main_image_path ?? '';
     const gallery = [];
     const seen = new Set();
     for (const entry of entries) {
       if (seen.has(entry.path)) continue;
       seen.add(entry.path);
+      if (mainPath && mainUrl && entry.path === mainPath) {
+        gallery.push({type: entry.type, url: mainUrl});
+        continue;
+      }
       try {
         if (!client) throw new Error('Supabase Storage is unavailable.');
         const {data,error} = await client.storage.from('product-images').createSignedUrl(entry.path,3600);
@@ -87,13 +92,16 @@
         return {image: fallback?.image || '', imageUrl: data.signedUrl, gallery};
       } catch (error) {
         console.warn('VC Fashion could not create a signed URL for a product image.', error);
-        return fallback?.image ? {image:fallback.image,imageUrl:'',gallery:[]} : {image:'',imageUrl:imagePlaceholder,gallery:[]};
+        return fallback?.image ? {image:fallback.image,imageUrl:fallback.imageUrl||'',gallery:fallback.imageUrl?[{type:'image',url:fallback.imageUrl}]:[]} : {image:'',imageUrl:imagePlaceholder,gallery:[]};
       }
     }
     const value = row.image_url ?? row.image ?? fallback?.image ?? '';
     if (/^https?:\/\//i.test(value)) return {image:'',imageUrl:value,gallery:[{type:'image',url:value}]};
-    if (/^photo-[\w-]+$/.test(value)) return {image:value,imageUrl:'',gallery:[]};
-    return fallback?.image ? {image:fallback.image,imageUrl:'',gallery:[]} : {image:'',imageUrl:imagePlaceholder,gallery:[]};
+    if (/^photo-[\w-]+$/.test(value)) {
+      const localFallback = fallback?.image === value ? fallback.imageUrl || '' : '';
+      return {image:value,imageUrl:localFallback,gallery:localFallback?[{type:'image',url:localFallback}]:[]};
+    }
+    return fallback?.image ? {image:fallback.image,imageUrl:fallback.imageUrl||'',gallery:fallback.imageUrl?[{type:'image',url:fallback.imageUrl}]:[]} : {image:'',imageUrl:imagePlaceholder,gallery:[]};
   }
 
   async function normalizeProduct(row, categoriesById, variantsByProductId, client) {

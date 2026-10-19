@@ -1,4 +1,19 @@
 // Shared sample catalog used by the homepage, shop, and product detail view.
+// Prefer checked-in local copies when their filenames match the catalog's
+// Unsplash photo ID. Products without a matching local file keep their remote
+// Unsplash URL below as the existing fallback.
+const FORME_LOCAL_PRODUCT_IMAGE_IDS = new Set([
+  'photo-1598554747436-c9293d6a588f',
+  'photo-1521572163474-6864f9cf17ab',
+  'photo-1541099649105-f69ad21f3246',
+  'photo-1576566588028-4147f3842f27',
+  'photo-1603252110481-7ba873bf42ab',
+  'photo-1595777457583-95e059d581b8',
+  'photo-1519238263530-99bdd11df2ea',
+  'photo-1516257984-b1b4d707412e',
+  'photo-1598033129183-c4f50c736f10'
+]);
+
 window.FORME_PRODUCTS = [
   {id:'linen-shirt',name:'Relaxed Linen Shirt',price:1499,oldPrice:1899,category:'Women',badge:'New arrival',rating:4.9,colors:['#d4cbbb','#687366','#eeeae1'],colorNames:['Sand','Olive','Ivory'],sizes:['S','M','L','XL'],image:'photo-1598554747436-c9293d6a588f',isNew:true,best:true},
   {id:'everyday-tee',name:'Everyday Cotton T-Shirt',price:799,oldPrice:null,category:'Men',badge:'Bestseller',rating:4.8,colors:['#e8e5dd','#242522','#8a8478'],colorNames:['Ivory','Black','Stone'],sizes:['S','M','L','XL','XXL'],image:'photo-1521572163474-6864f9cf17ab',isNew:true,best:true},
@@ -13,3 +28,7 @@ window.FORME_PRODUCTS = [
   {id:'kids-tee',name:'Little Cotton T-Shirt',price:599,oldPrice:null,category:'Kids',badge:'Just landed',rating:4.7,colors:['#e8e5dd','#73806b'],colorNames:['Ivory','Sage'],sizes:['S','M','L','XL'],image:'photo-1519238263530-99bdd11df2ea',isNew:false,best:false},
   {id:'summer-shirt',name:'Airy Summer Shirt',price:1299,oldPrice:1599,category:'Men',badge:'Bestseller',rating:4.8,colors:['#e7ddcc','#676f61'],colorNames:['Natural','Olive'],sizes:['S','M','L','XL','XXL'],image:'photo-1598033129183-c4f50c736f10',isNew:false,best:true}
 ];
+
+window.FORME_PRODUCTS.forEach(product => {
+  if (FORME_LOCAL_PRODUCT_IMAGE_IDS.has(product.image)) product.imageUrl = `img/${product.image}.avif`;
+});
