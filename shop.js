@@ -1,5 +1,5 @@
 (() => {
-  let products=window.FORME_PRODUCTS;
+  let products=[];
   const {money,imageUrl,isWishlisted}=window.FormeCommerce;
   const grid=document.getElementById('shop-product-grid');
   const filterForm=document.querySelector('.filter-sidebar');
@@ -107,9 +107,10 @@
     document.getElementById('result-count').textContent = result.length;
     const emptyState = document.getElementById('shop-no-results');
     emptyState.hidden = result.length > 0;
-    emptyState.querySelector('h2').textContent = emptyWishlist ? 'Your wishlist is empty.' : 'No pieces found.';
-    emptyState.querySelector('p').textContent = emptyWishlist ? 'Save a piece with its heart button and it will appear here.' : 'Try changing your search or clearing a filter.';
-    emptyState.querySelector('button').hidden = emptyWishlist;
+    const catalogUnavailable = window.FORME_CATALOG_SOURCE === 'unavailable';
+    emptyState.querySelector('h2').textContent = catalogUnavailable ? 'Collection unavailable.' : emptyWishlist ? 'Your wishlist is empty.' : 'No pieces found.';
+    emptyState.querySelector('p').textContent = catalogUnavailable ? 'Please try again later.' : emptyWishlist ? 'Save a piece with its heart button and it will appear here.' : 'Try changing your search or clearing a filter.';
+    emptyState.querySelector('button').hidden = catalogUnavailable || emptyWishlist;
     grid.hidden = result.length === 0;
     const selectedFilterCount = [...filterForm.querySelectorAll('input:checked')].length;
     const count = selectedFilterCount + (searchText ? 1 : 0);
@@ -207,9 +208,8 @@
   syncSearchControls();
   render();
   window.FORME_CATALOG_READY?.then(loadedProducts=>{
-    if(!Array.isArray(loadedProducts)||!loadedProducts.length)return;
     const selectedCategories=checked('category');
-    products=loadedProducts;
+    products=Array.isArray(loadedProducts)?loadedProducts:[];
     renderCategories(selectedCategories);
     renderColors();
     renderSizes(checked('size'));

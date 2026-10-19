@@ -1,7 +1,8 @@
-// Shared sample catalog used by the homepage, shop, and product detail view.
+// Legacy reference catalog used to match live Supabase rows and their local
+// image fallbacks. It is not rendered as storefront inventory by itself.
 // Prefer checked-in local copies when their filenames match the catalog's
 // Unsplash photo ID. Products without a matching local file keep their remote
-// Unsplash URL below as the existing fallback.
+// Unsplash URL below as the existing image fallback.
 const FORME_LOCAL_PRODUCT_IMAGE_IDS = new Set([
   'photo-1598554747436-c9293d6a588f',
   'photo-1521572163474-6864f9cf17ab',

@@ -9,7 +9,7 @@
    network. Offline checkout and payment are deliberately not supported. */
 'use strict';
 
-const VERSION = 'v1';
+const VERSION = 'v2';
 const SHELL_CACHE = `vc-fashion-shell-${VERSION}`;
 const ASSET_CACHE = `vc-fashion-assets-${VERSION}`;
 const FONT_CACHE = `vc-fashion-fonts-${VERSION}`;

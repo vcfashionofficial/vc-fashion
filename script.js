@@ -1,5 +1,5 @@
 // Homepage catalogue and lightweight storefront interactions.
-let products = window.FORME_PRODUCTS;
+let products = [];
 
 const formatPrice = value => `₹${value.toLocaleString('en-IN')}`;
 const imageUrl = (id, width=800) => /^https?:\/\//i.test(id || '') ? id : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${width}&q=78`;
@@ -68,7 +68,10 @@ function renderProducts() {
   const newProducts = ordered.slice(0,8);
   const shownIds = new Set(newProducts.map(product => product.id));
   const moreProducts = ordered.filter(product => !shownIds.has(product.id)).slice(0,8);
-  const empty = `<div class="search-empty"><strong>No pieces found just yet.</strong>Try another search or explore all our new arrivals.</div>`;
+  const catalogUnavailable = window.FORME_CATALOG_SOURCE === 'unavailable';
+  const empty = catalogUnavailable
+    ? `<div class="search-empty" role="status"><strong>Collection unavailable.</strong>Please try again later.</div>`
+    : `<div class="search-empty" role="status"><strong>No pieces found just yet.</strong>Try another search or explore all our new arrivals.</div>`;
   newGrid.innerHTML = newProducts.length ? newProducts.map(productCard).join('') : empty;
   bestGrid.innerHTML = moreProducts.map(productCard).join('');
   document.getElementById('best-sellers').hidden = moreProducts.length === 0;
@@ -165,11 +168,10 @@ renderHomeCategoryChips();
 renderProducts();
 window.addEventListener('forme:wishlist', renderProducts);
 window.FORME_CATALOG_READY?.then(loadedProducts => {
-  if (!Array.isArray(loadedProducts) || !loadedProducts.length) return;
-  products = loadedProducts;
+  products = Array.isArray(loadedProducts) ? loadedProducts : [];
   renderHomeCategoryChips();
   renderProducts();
-  initHeroBestSellers(loadedProducts);
+  if (products.length) initHeroBestSellers(products);
 });
 
 // ---- Best Seller hero carousel ------------------------------------------------

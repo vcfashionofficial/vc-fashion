@@ -1,36 +1,10 @@
 // Loads the live Supabase catalog and normalizes it to the existing UI shape.
-// products.js remains the local fallback until the live catalog is verified.
 (() => {
   const fallbackProducts = Array.isArray(window.FORME_PRODUCTS) ? window.FORME_PRODUCTS : [];
+  window.FORME_CATALOG_SOURCE = 'loading';
+  window.FORME_CATALOG_ERROR = null;
   const slugify = value => String(value || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const imagePlaceholder = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 760"><rect width="600" height="760" fill="#eeede7"/><path d="M240 300h120l40 180H200z" fill="#dedcd3"/><circle cx="300" cy="250" r="55" fill="#dedcd3"/><text x="300" y="560" text-anchor="middle" font-family="sans-serif" font-size="18" letter-spacing="5" fill="#969586">VC FASHION</text></svg>');
-
-  function fallbackVariants(product) {
-    return (product.sizes || []).flatMap(size => (product.colors || []).map((color, index) => ({
-      id: null,
-      size,
-      color: product.colorNames?.[index] || `Color ${index + 1}`,
-      color_hex: color,
-      stock: null
-    })));
-  }
-
-  function normalizeFallback(product) {
-    const variants = fallbackVariants(product);
-    return {
-      ...product,
-      dbId: null,
-      legacyId: product.id,
-      categoryId: null,
-      description: product.description || '',
-      imageUrl: product.imageUrl || (/^https?:\/\//i.test(product.image || '') ? product.image : ''),
-      variants,
-      defaultSize: product.sizes?.includes('M') ? 'M' : (product.sizes?.[0] || ''),
-      defaultColor: product.colors?.[0] || '',
-      inStock: true,
-      source: 'fallback'
-    };
-  }
 
   function rupeeValue(row, paiseKeys, rupeeKeys, fallbackValue=null) {
     for (const key of paiseKeys) if (row[key] !== null && row[key] !== undefined && row[key] !== '') return Number(row[key]) / 100;
@@ -173,9 +147,12 @@
   async function loadProducts() {
     const client = window.FORME_SUPABASE;
     if (!client) {
-      window.FORME_CATALOG_SOURCE = 'fallback';
-      window.FORME_CATEGORIES = [...new Set(fallbackProducts.map(product => product.category).filter(Boolean))].map((name,index)=>({id:`fallback-${index}`,name,slug:slugify(name)}));
-      return fallbackProducts.map(normalizeFallback);
+      const error = new Error('The product catalog service is unavailable. Please try again later.');
+      window.FORME_CATALOG_SOURCE = 'unavailable';
+      window.FORME_CATALOG_ERROR = error;
+      window.FORME_PRODUCTS = [];
+      window.FORME_CATEGORIES = [];
+      return [];
     }
 
     try {
@@ -185,7 +162,7 @@
         client.from('product_variants').select('*')
       ]);
       for (const result of [productsResult, categoriesResult, variantsResult]) if (result.error) throw result.error;
-      if (!Array.isArray(productsResult.data) || productsResult.data.length === 0) throw new Error('Supabase returned no products; retaining the local catalog fallback.');
+      if (!Array.isArray(productsResult.data)) throw new Error('Supabase returned an invalid product catalog response.');
 
       const categoriesById = new Map();
       for (const category of categoriesResult.data || []) {
@@ -203,16 +180,18 @@
         .filter(row => Boolean(row.is_active ?? row.active ?? true))
         .map(row => normalizeProduct(row, categoriesById, variantsByProductId, client)));
       products.sort((a,b) => a.sortOrder - b.sortOrder);
-      if (!products.length) throw new Error('Supabase returned no active products; retaining the local catalog fallback.');
 
       window.FORME_PRODUCTS = products;
       window.FORME_CATALOG_SOURCE = 'supabase';
+      window.FORME_CATALOG_ERROR = null;
       return products;
     } catch (error) {
-      console.warn('VC Fashion could not load its Supabase catalog. Using products.js until the connection is verified.', error);
-      window.FORME_CATALOG_SOURCE = 'fallback';
-      window.FORME_CATEGORIES = [...new Set(fallbackProducts.map(product => product.category).filter(Boolean))].map((name,index)=>({id:`fallback-${index}`,name,slug:slugify(name)}));
-      return fallbackProducts.map(normalizeFallback);
+      console.error('VC Fashion could not load its Supabase catalog.', error);
+      window.FORME_CATALOG_SOURCE = 'unavailable';
+      window.FORME_CATALOG_ERROR = error;
+      window.FORME_PRODUCTS = [];
+      window.FORME_CATEGORIES = [];
+      return [];
     }
   }
 
