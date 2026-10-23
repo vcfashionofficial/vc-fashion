@@ -44,6 +44,8 @@ function productCard(product) {
   const available = product.inStock !== false && validStock;
   const hasAvailableVariant = (product.variants || []).some(variant => Number.isInteger(Number(variant.stock)) && Number(variant.stock) > 0);
   const productUrl = `product.html?id=${encodeURIComponent(product.id)}`;
+  const shareId = String(product.id).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+  const shareButton = `<button class="share-product-button" type="button" data-share-product="${shareId}" data-share-name="${name}" data-share-price="${Number(product.price)||0}" aria-label="Share ${name}" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.7 10.6 6.6-4.2M8.7 13.4l6.6 4.2"></path></svg></button>`;
   const cardAction = product.inStock === false
     ? `<button class="quick-add" type="button" disabled aria-label="Sold out: ${name}">Sold out</button>`
     : hasDefaultSelection && available
@@ -52,7 +54,7 @@ function productCard(product) {
         ? `<button class="quick-add" type="button" disabled aria-label="Sold out: ${name}">Sold out</button>`
         : `<a class="quick-add" href="${productUrl}" aria-label="Choose options for ${name}">Choose options <span aria-hidden="true">&rarr;</span></a>`;
   return `<article class="product-card">
-    <div class="product-image"><span class="product-badge">${label}</span><a class="product-image-link" href="${productUrl}" aria-label="View ${name}"><img src="${productImageUrl(product)}" alt="${name}" loading="lazy"></a><button class="wishlist-button${saved?' is-saved':''}" type="button" data-wishlist="${product.id}" aria-label="${saved?'Remove':'Add'} ${name} ${saved?'from':'to'} wishlist" aria-pressed="${saved}">${saved?'♥':'♡'}</button>${cardAction}</div>
+    <div class="product-image"><span class="product-badge">${label}</span><a class="product-image-link" href="${productUrl}" aria-label="View ${name}"><img src="${productImageUrl(product)}" alt="${name}" width="600" height="760" loading="lazy" decoding="async"></a>${shareButton}<button class="wishlist-button${saved?' is-saved':''}" type="button" data-wishlist="${product.id}" aria-label="${saved?'Remove':'Add'} ${name} ${saved?'from':'to'} wishlist" aria-pressed="${saved}">${saved?'♥':'♡'}</button>${cardAction}</div>
     <div class="product-info"><div class="product-topline"><a class="product-name product-name-link" href="product.html?id=${encodeURIComponent(product.id)}">${name}</a><span class="product-rating"><span>★</span> ${product.rating}</span></div><div class="product-meta"><span class="product-price">${formatPrice(product.price)}${oldPrice}</span><span class="product-swatches" aria-label="Available colours">${swatches}</span></div></div>
   </article>`;
 }
@@ -193,7 +195,7 @@ function initHeroBestSellers(loadedProducts) {
     const oldPrice = product.oldPrice ? `<del>${formatPrice(product.oldPrice)}</del>` : '';
     return `<div class="hero-carousel-slide${index===0?' is-active':''}" role="group" aria-label="${index+1} of ${bestSellers.length}: ${name}"${index===0?'':' aria-hidden="true"'}>
       <div class="hero-carousel-copy"><p class="hero-kicker"><span></span> BEST SELLERS</p><h2 class="hero-carousel-name"><a href="${url}">${name}</a></h2><p class="hero-carousel-price">${formatPrice(product.price)}${oldPrice}</p><div class="hero-carousel-buttons"><a class="button button-light" href="${url}">Shop now <span aria-hidden="true">→</span></a></div></div>
-      <a class="hero-carousel-media" href="${url}" aria-label="View ${name}"><img src="${escapeHero(productImageUrl(product, 1200))}" alt="${name}"${index===0?' fetchpriority="high"':' loading="lazy"'}></a>
+      <a class="hero-carousel-media" href="${url}" aria-label="View ${name}"><img src="${escapeHero(productImageUrl(product, 1200))}" alt="${name}" width="1200" height="1500" decoding="async"${index===0?' fetchpriority="high"':' loading="lazy"'}></a>
     </div>`;
   }).join('');
   dots.innerHTML = bestSellers.map((product, index) => `<button type="button" aria-label="Show ${escapeHero(product.name)}"${index===0?' aria-current="true"':''}></button>`).join('');

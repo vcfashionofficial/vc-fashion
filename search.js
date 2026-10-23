@@ -76,7 +76,7 @@
     const category = escapeHtml(product.category || 'VC FASHION');
     const colors = (product.colorNames || []).slice(0,3).map(escapeHtml).join(' · ');
     const detail = colors ? `${category} · ${colors}` : category;
-    return `<a class="search-result-card" href="product.html?id=${encodeURIComponent(product.id)}"><img src="${escapeHtml(image(product))}" alt="${name}" loading="lazy"><span class="search-result-copy"><strong>${name}</strong><small>${detail}</small><span class="search-result-price">${money(product.price)}</span></span><span class="search-result-arrow" aria-hidden="true">&rarr;</span></a>`;
+    return `<article class="search-result-card"><a class="search-result-link" href="product.html?id=${encodeURIComponent(product.id)}"><img src="${escapeHtml(image(product))}" alt="${name}" loading="lazy"><span class="search-result-copy"><strong>${name}</strong><small>${detail}</small><span class="search-result-price">${money(product.price)}</span></span><span class="search-result-arrow" aria-hidden="true">&rarr;</span></a><button class="share-product-button" type="button" data-share-product="${escapeHtml(product.id)}" data-share-name="${name}" data-share-price="${Number(product.price)||0}" aria-label="Share ${name}" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.7 10.6 6.6-4.2M8.7 13.4l6.6 4.2"></path></svg></button></article>`;
   }
 
   function updateUrl(query) {

@@ -5,6 +5,24 @@
   window.FORME_CATALOG_ERROR = null;
   const slugify = value => String(value || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const imagePlaceholder = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 760"><rect width="600" height="760" fill="#eeede7"/><path d="M240 300h120l40 180H200z" fill="#dedcd3"/><circle cx="300" cy="250" r="55" fill="#dedcd3"/><text x="300" y="560" text-anchor="middle" font-family="sans-serif" font-size="18" letter-spacing="5" fill="#969586">VC FASHION</text></svg>');
+  const signedUrlCache = new Map();
+  const productRowsById = new Map();
+  const signedUrlTtlMs = 55 * 60 * 1000;
+
+  async function signedUrlFor(path, client) {
+    const cached = signedUrlCache.get(path);
+    if (cached && cached.expiresAt > Date.now()) return cached.promise;
+    const promise = (async () => {
+      const {data,error} = await client.storage.from('product-images').createSignedUrl(path,3600);
+      if (error) throw error;
+      if (!data?.signedUrl) throw new Error('Supabase did not return a signed media URL.');
+      signedUrlCache.set(path, {promise: Promise.resolve(data.signedUrl), expiresAt: Date.now() + signedUrlTtlMs});
+      return data.signedUrl;
+    })();
+    signedUrlCache.set(path, {promise, expiresAt: Date.now() + signedUrlTtlMs});
+    try { return await promise; }
+    catch (error) { if (signedUrlCache.get(path)?.promise === promise) signedUrlCache.delete(path); throw error; }
+  }
 
   function rupeeValue(row, paiseKeys, rupeeKeys, fallbackValue=null) {
     for (const key of paiseKeys) if (row[key] !== null && row[key] !== undefined && row[key] !== '') return Number(row[key]) / 100;
@@ -41,10 +59,7 @@
       }
       try {
         if (!client) throw new Error('Supabase Storage is unavailable.');
-        const {data,error} = await client.storage.from('product-images').createSignedUrl(entry.path,3600);
-        if (error) throw error;
-        if (!data?.signedUrl) throw new Error('Supabase did not return a signed media URL.');
-        gallery.push({type: entry.type, url: data.signedUrl});
+        gallery.push({type: entry.type, url: await signedUrlFor(entry.path, client)});
       } catch (error) {
         console.warn('VC Fashion could not create a signed URL for a product media file.', error);
       }
@@ -59,11 +74,8 @@
     if (storagePath) {
       try {
         if (!client) throw new Error('Supabase Storage is unavailable.');
-        const {data,error} = await client.storage.from('product-images').createSignedUrl(storagePath,3600);
-        if (error) throw error;
-        if (!data?.signedUrl) throw new Error('Supabase did not return a signed image URL.');
-        const gallery = await galleryDetails(row, client, data.signedUrl);
-        return {image: fallback?.image || '', imageUrl: data.signedUrl, gallery};
+        const imageUrl = await signedUrlFor(storagePath, client);
+        return {image: fallback?.image || '', imageUrl, gallery: [{type:'image', url:imageUrl}]};
       } catch (error) {
         console.warn('VC Fashion could not create a signed URL for a product image.', error);
         return fallback?.image ? {image:fallback.image,imageUrl:fallback.imageUrl||'',gallery:fallback.imageUrl?[{type:'image',url:fallback.imageUrl}]:[]} : {image:'',imageUrl:imagePlaceholder,gallery:[]};
@@ -180,6 +192,11 @@
         .filter(row => Boolean(row.is_active ?? row.active ?? true))
         .map(row => normalizeProduct(row, categoriesById, variantsByProductId, client)));
       products.sort((a,b) => a.sortOrder - b.sortOrder);
+      productRowsById.clear();
+      for (const row of productsResult.data) {
+        const product = products.find(item => item.dbId === String(row.id ?? row.product_id ?? ''));
+        if (product) productRowsById.set(product.id, row);
+      }
 
       window.FORME_PRODUCTS = products;
       window.FORME_CATALOG_SOURCE = 'supabase';
@@ -196,4 +213,13 @@
   }
 
   window.FORME_CATALOG_READY = loadProducts();
+  window.FORME_LOAD_PRODUCT_GALLERY = async product => {
+    const row = productRowsById.get(String(product?.id ?? ''));
+    const client = window.FORME_SUPABASE;
+    if (!row || !client) return Array.isArray(product?.gallery) ? product.gallery : [];
+    const mainUrl = product.imageUrl || '';
+    const gallery = await galleryDetails(row, client, mainUrl);
+    product.gallery = gallery;
+    return gallery;
+  };
 })();

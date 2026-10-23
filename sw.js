@@ -9,7 +9,7 @@
    network. Offline checkout and payment are deliberately not supported. */
 'use strict';
 
-const VERSION = 'v2';
+const VERSION = 'v7';
 const SHELL_CACHE = `vc-fashion-shell-${VERSION}`;
 const ASSET_CACHE = `vc-fashion-assets-${VERSION}`;
 const FONT_CACHE = `vc-fashion-fonts-${VERSION}`;
@@ -31,6 +31,7 @@ const APP_SHELL = [
   'supabase-client.js',
   'catalog-service.js',
   'commerce.js',
+  'share.js',
   'script.js',
   'shop.js',
   'product.js',
