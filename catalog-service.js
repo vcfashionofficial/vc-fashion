@@ -5,6 +5,7 @@
   window.FORME_CATALOG_ERROR = null;
   const slugify = value => String(value || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   const imagePlaceholder = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 760"><rect width="600" height="760" fill="#eeede7"/><path d="M240 300h120l40 180H200z" fill="#dedcd3"/><circle cx="300" cy="250" r="55" fill="#dedcd3"/><text x="300" y="560" text-anchor="middle" font-family="sans-serif" font-size="18" letter-spacing="5" fill="#969586">VC FASHION</text></svg>');
+  window.FORME_PRODUCT_IMAGE_PLACEHOLDER = imagePlaceholder;
   const signedUrlCache = new Map();
   const productRowsById = new Map();
   const signedUrlTtlMs = 55 * 60 * 1000;
@@ -44,6 +45,36 @@
       .filter(entry => entry && typeof entry.path === 'string' && entry.path)
       .map(entry => ({path: entry.path, type: entry.type === 'video' ? 'video' : 'image'}));
   }
+
+  // These tiles follow the same active catalog order as the storefront. The
+  // catalog loader has already normalized each primary image to imageUrl.
+  window.FORME_GET_HOME_CATEGORY_PRODUCTS = loadedProducts => {
+    const active = (Array.isArray(loadedProducts) ? loadedProducts : [])
+      .filter(product => product && product.source === 'supabase');
+    const categoryProducts = category => active.filter(product => {
+      const key = slugify(product.category).replaceAll('-', '');
+      return key === category || key === `${category}s` || (category === 'kids' && key === 'children');
+    });
+    const women = categoryProducts('women');
+    const men = categoryProducts('men');
+    const kids = categoryProducts('kids');
+    return {women: women[0] || null, men: men[0] || null, kids: kids[0] || null, menSecond: men[1] || null};
+  };
+
+  window.FORME_HOME_CATEGORY_IMAGE_URL = product => {
+    if (typeof product?.imageUrl === 'string' && product.imageUrl.trim()) return product.imageUrl;
+    if (typeof product?.image === 'string' && /^https?:\/\//i.test(product.image)) return product.image;
+    return imagePlaceholder;
+  };
+
+  // The closing editorial banner uses the second active Men product from the
+  // same ordered catalog selection as the category imagery. Empty means the
+  // caller should retain its local editorial fallback.
+  window.FORME_HOME_HERO_IMAGE_URL = loadedProducts => {
+    const product = window.FORME_GET_HOME_CATEGORY_PRODUCTS(loadedProducts).menSecond;
+    const url = window.FORME_HOME_CATEGORY_IMAGE_URL(product);
+    return url && url !== imagePlaceholder ? url : '';
+  };
 
   async function galleryDetails(row, client, mainUrl) {
     const entries = readMediaEntries(row);

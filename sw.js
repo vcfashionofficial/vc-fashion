@@ -9,7 +9,7 @@
    network. Offline checkout and payment are deliberately not supported. */
 'use strict';
 
-const VERSION = 'v7';
+const VERSION = 'v8';
 const SHELL_CACHE = `vc-fashion-shell-${VERSION}`;
 const ASSET_CACHE = `vc-fashion-assets-${VERSION}`;
 const FONT_CACHE = `vc-fashion-fonts-${VERSION}`;
@@ -23,7 +23,15 @@ const APP_SHELL = [
   'shop.html',
   'product.html',
   'search.html',
+  'about.html',
+  'contact.html',
+  'pricing.html',
+  'terms.html',
+  'privacy.html',
+  'shipping.html',
+  'returns.html',
   'style.css',
+  'policy.css',
   'shop.css',
   'product.css',
   'products.js',
@@ -36,6 +44,7 @@ const APP_SHELL = [
   'shop.js',
   'product.js',
   'search.js',
+  'pricing.js',
   'pwa.js',
   'manifest.webmanifest',
   'favicon.svg',
@@ -159,6 +168,24 @@ async function handleStaticAsset(request, url) {
   const precached = isPrecachedShellFile(url.pathname);
   const cacheName = precached ? SHELL_CACHE : ASSET_CACHE;
   const cache = await caches.open(cacheName);
+
+  // Keep storefront presentation and catalog selection code fresh so released
+  // UI/catalog fixes are not hidden by the shell's cache-first strategy.
+  // These public assets still use the existing shell cache as an offline fallback.
+  if (['style.css', 'catalog-service.js', 'script.js'].includes(url.pathname.replace(/^\//, ''))) {
+    const cached = await cache.match(request, { ignoreSearch: true });
+    try {
+      const response = await fetch(request);
+      if (response && response.ok && response.type === 'basic') {
+        await cache.put(request, response.clone());
+      }
+      return response;
+    } catch (error) {
+      if (cached) return cached;
+      throw error;
+    }
+  }
+
   const cached = await cache.match(request, { ignoreSearch: precached });
   if (cached) return cached;
   const response = await fetch(request);

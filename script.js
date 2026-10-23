@@ -27,6 +27,46 @@ function renderHomeCategoryChips() {
   }).join('')}`;
 }
 
+function renderHomeCategoryImages(loadedProducts) {
+  const selection = window.FORME_GET_HOME_CATEGORY_PRODUCTS?.(loadedProducts) || {};
+  const placeholder = window.FORME_PRODUCT_IMAGE_PLACEHOLDER || '';
+  const productForTile = {
+    women: selection.women,
+    men: selection.men,
+    kids: selection.kids
+  };
+  document.querySelectorAll('[data-home-category-image]').forEach(image => {
+    const product = productForTile[image.dataset.homeCategoryImage];
+    const src = window.FORME_HOME_CATEGORY_IMAGE_URL?.(product) || placeholder;
+    image.onerror = () => {
+      image.onerror = null;
+      if (placeholder && image.src !== new URL(placeholder, document.baseURI).href) image.src = placeholder;
+    };
+    if (src) image.src = src;
+  });
+}
+
+function renderHomeClosingImage(loadedProducts) {
+  const image = document.querySelector('[data-home-men-hero-image]');
+  if (!image) return;
+  const fallback = image.dataset.fallbackSrc || '';
+  const fallbackAlt = image.dataset.fallbackAlt || '';
+  const selection = window.FORME_GET_HOME_CATEGORY_PRODUCTS?.(loadedProducts) || {};
+  const src = window.FORME_HOME_HERO_IMAGE_URL?.(loadedProducts) || '';
+  const useFallback = () => {
+    image.onerror = null;
+    if (fallback) image.src = fallback;
+    image.alt = fallbackAlt;
+  };
+  if (!src) {
+    useFallback();
+    return;
+  }
+  image.onerror = useFallback;
+  image.alt = selection.menSecond?.name ? `${selection.menSecond.name} from the Men's collection` : '';
+  image.src = src;
+}
+
 function productCard(product) {
   const {isWishlisted} = window.FormeCommerce;
   const saved = isWishlisted(product.id);
@@ -168,11 +208,14 @@ document.querySelectorAll('#main-nav a').forEach(link => link.addEventListener('
 
 renderHomeCategoryChips();
 renderProducts();
+renderHomeCategoryImages([]);
 window.addEventListener('forme:wishlist', renderProducts);
 window.FORME_CATALOG_READY?.then(loadedProducts => {
   products = Array.isArray(loadedProducts) ? loadedProducts : [];
   renderHomeCategoryChips();
   renderProducts();
+  renderHomeCategoryImages(products);
+  renderHomeClosingImage(products);
   if (products.length) initHeroBestSellers(products);
 });
 

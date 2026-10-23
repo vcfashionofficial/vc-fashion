@@ -20,7 +20,8 @@
   // street address, GSTIN, PAN or tax rate, so the invoice neither shows nor
   // invents them and is never labelled a GST tax invoice.
   const SELLER_NAME = 'VC Fashion';
-  const SELLER_CONTACT = 'hello@vcfashion.example';
+  const SELLER_CONTACT = '20vaibhavd2@gmail.com';
+  const SELLER_PHONE = '+91 96916 44513';
 
   // Signature block. The signed asset is only shown from assets/signature.png
   // when that file is actually deployed; without it a blank line is printed for
@@ -323,7 +324,7 @@ body{margin:0;background:#f1f0eb;color:var(--ink);font:400 14px/1.6 "DM Sans",Ar
       '<div>',
       `<span class="invoice-wordmark">${escapeHtml(SELLER_NAME)}<sup>®</sup></span>`,
       '<p class="invoice-tagline">Everyday pieces, considered.</p>',
-      `<p class="invoice-contact">${escapeHtml(SELLER_CONTACT)}</p>`,
+      `<p class="invoice-contact">${escapeHtml(SELLER_CONTACT)} · ${escapeHtml(SELLER_PHONE)}</p>`,
       '</div>',
       '</div>',
       '<div class="invoice-heading">',

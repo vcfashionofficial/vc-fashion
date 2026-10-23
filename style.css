@@ -103,7 +103,7 @@
 .home-page .hero-subtitle{font-size:14px;line-height:1.6;max-width:390px}
 .home-page .hero-buttons .button{min-height:48px;min-width:158px;font-size:9px}
 .home-page .categories{padding-top:92px;padding-bottom:74px}
-.home-page .category-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.home-page .category-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .home-page .category-card,.home-page .category-card:first-child{height:auto;min-height:0;aspect-ratio: .73}
 .home-page .category-large{grid-column:auto}
 .home-page .category-card img{object-position:center;transition:transform .55s ease}
@@ -417,3 +417,24 @@
 .detail-info .detail-share-button{appearance:none;-webkit-appearance:none;position:static;width:100%;min-height:42px;margin-top:10px;padding:0 14px;display:flex;align-items:center;justify-content:center;gap:9px;border:1px solid #d9d8d0;border-radius:2px;background:transparent;color:#4d4e47;font-family:var(--sans);font-size:9px;line-height:1;letter-spacing:.55px;text-transform:uppercase;cursor:pointer}
 .detail-info .detail-share-button svg{display:block;flex:none;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .detail-info .detail-share-button:hover{border-color:#262723;background:#eeede7;color:#262723}
+
+/* Policy links added to compact customer-page footers. */
+.footer .policy-footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:9px 18px;margin:0 auto 14px}
+.footer .policy-footer-links a{color:#d5d3c8;font-size:9px;line-height:1.5}
+.footer.policy-links-only{padding-top:24px}
+.footer.policy-links-only .footer-bottom{border-top:1px solid #484943;padding-top:14px}
+@media(max-width:680px){.footer .policy-footer-links{justify-content:flex-start;gap:8px 13px;margin-bottom:12px}.footer .policy-footer-links a{font-size:8px}.footer.policy-links-only{padding:23px 18px 16px}.footer.policy-links-only .footer-bottom{font-size:7px}}
+
+/* Google review link: a compact footer action that follows the existing dark footer palette. */
+.footer .google-review-link,.policy-footer .google-review-link{display:inline-flex;align-items:center;justify-content:center;gap:7px;width:max-content;max-width:100%;min-height:34px;padding:0 11px;border:1px solid #77786e;border-radius:2px;background:#2b2c28;color:#f2f1ec;font-size:9px;font-weight:600;letter-spacing:.1px;line-height:1.3;text-decoration:none;transition:background .2s,border-color .2s,color .2s}
+.footer .google-review-link:hover,.policy-footer .google-review-link:hover{background:#3b3c34;border-color:#b9b896;color:#fff;text-decoration:none}
+.footer .google-review-link span,.policy-footer .google-review-link span{color:#c5c3ae;font-size:12px}
+@media(max-width:680px){.footer .google-review-link,.policy-footer .google-review-link{min-height:36px;font-size:9px}}
+
+/* Homepage review action sits in the normal flow immediately before Collections. */
+.home-google-review{width:265px;height:auto;min-height:44px;box-sizing:border-box;margin-inline:auto;margin-bottom:10px;padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:12px;border:1px solid #e5e0da;border-radius:999px;background:#fff;color:#34332f;box-shadow:0 2px 7px rgba(25,26,24,.06);font-size:13px;font-weight:600;white-space:nowrap;transition:background .2s,border-color .2s,box-shadow .2s,transform .2s}
+.home-google-review:hover{background:#faf9f6;border-color:#c9c4b8;box-shadow:0 5px 14px rgba(25,26,24,.13);transform:translateY(-2px)}
+.home-google-review:focus-visible{outline:2px solid #a4a37a;outline-offset:3px}
+.home-google-review__icon{display:block;position:static;flex-shrink:0;width:24px;height:24px;max-width:24px;max-height:24px;aspect-ratio:1/1;object-fit:contain}
+.home-google-review-label{display:block;position:static;width:auto;height:auto;margin:0;overflow:visible;clip:auto;white-space:nowrap;font-size:13px;font-weight:600;line-height:1.25}
+@media(max-width:767px){.home-google-review{width:70vw;text-align:center}}
